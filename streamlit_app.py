@@ -22,7 +22,7 @@ st.set_page_config(
 def load_data_and_model():
     """Load pre-processed data and build the recommendation model"""
     # URL to your raw GitHub file
-    GITHUB_RAW_URL = "https://github.com/MutasimBillahArib/machine-learning-with-python-freecodecamp/blob/main/book-recommendation-engine/book_recommendation_data.pkl"
+    GITHUB_RAW_URL = "https://raw.githubusercontent.com/MutasimBillahArib/machine-learning-with-python-freecodecamp/blob/main/book-recommendation-engine/book_recommendation_data.pkl"
     
     try:
         # Download the pre-processed data
