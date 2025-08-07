@@ -6,6 +6,3 @@ scikit-learn
 fuzzywuzzy
 python-Levenshtein
 wget
-zipfile
-os
-tempfile
