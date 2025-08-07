@@ -9,6 +9,7 @@ import zipfile
 import os
 import tempfile
 import requests
+import pickle
 
 # Set page config
 st.set_page_config(
