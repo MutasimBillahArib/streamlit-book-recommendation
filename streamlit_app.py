@@ -8,6 +8,7 @@ import wget
 import zipfile
 import os
 import tempfile
+import requests
 
 # Set page config
 st.set_page_config(
