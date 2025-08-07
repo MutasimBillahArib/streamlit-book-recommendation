@@ -1,25 +1,28 @@
-# 📦 Streamlit App Starter Kit 
-```
-⬆️ (Replace above with your app's name)
-```
+# 📚 Book Recommendation Engine with KNN
 
-Description of the app ...
+A simple yet powerful book recommendation app that suggests similar books using collaborative filtering and the K-Nearest Neighbors (KNN) algorithm.
 
-## Demo App
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://arib-book-recommendation.streamlit.app/)
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://app-starter-kit.streamlit.app/)
+## 🔍 How It Works
 
-## GitHub Codespaces
+This app uses **item-based collaborative filtering** to recommend books based on user rating patterns from the [Book-Crossing Dataset](https://www.bookcrossing.com/). When you search for a book, the system:
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/app-starter-kit?quickstart=1)
+1. Finds books with similar user rating patterns
+2. Uses **cosine similarity** and **KNN** to identify the most similar books
+3. Returns recommendations with similarity scores
 
-## Section Heading
+## 🚀 Features
 
-This is filler text, please replace this with text for this section.
+- Search for any book in the dataset
+- Fuzzy matching to handle partial/misspelled titles
+- Top-N recommendations with similarity scores
+- Clean, intuitive interface
 
-## Further Reading
+## 🛠️ Technical Details
 
-This is filler text, please replace this with a explanatory text about further relevant resources for this repo
-- Resource 1
-- Resource 2
-- Resource 3
+- **Algorithm**: K-Nearest Neighbors (KNN) with cosine similarity
+- **Data**: Book-Crossing Dataset (filtered to active users and popular books)
+- **Stack**: Python, Streamlit, scikit-learn, pandas
+- **Optimization**: Pre-processed dataset stored on GitHub for faster loading
+
