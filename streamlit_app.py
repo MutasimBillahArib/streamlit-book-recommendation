@@ -18,79 +18,32 @@ st.set_page_config(
 
 @st.cache_resource
 def load_data_and_model():
-    """Load dataset and build the recommendation model"""
-    # Check if data files exist, if not download and extract
-    if not os.path.exists('BX-Books.csv') or not os.path.exists('BX-Book-Ratings.csv'):
-        with st.spinner('Downloading dataset...'):
-            # Create temp directory
-            temp_dir = tempfile.mkdtemp()
-            
-            # Download zip file
-            zip_path = os.path.join(temp_dir, 'book-crossings.zip')
-            wget.download('https://cdn.freecodecamp.org/project-data/books/book-crossings.zip', zip_path)
-            
-            # Extract files
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                zip_ref.extractall(temp_dir)
-            
-            # Move files to current directory
-            os.rename(os.path.join(temp_dir, 'BX-Books.csv'), 'BX-Books.csv')
-            os.rename(os.path.join(temp_dir, 'BX-Book-Ratings.csv'), 'BX-Book-Ratings.csv')
+    """Load pre-processed data and build the recommendation model"""
+    # URL to your raw GitHub file
+    GITHUB_RAW_URL = "https://github.com/MutasimBillahArib/machine-learning-with-python-freecodecamp/blob/main/book-recommendation-engine/book_recommendation_data.pkl"
     
-    # Load books data
-    df_books = pd.read_csv(
-        'BX-Books.csv',
-        encoding="ISO-8859-1",
-        sep=";",
-        header=0,
-        names=['isbn', 'title', 'author'],
-        usecols=['isbn', 'title', 'author'],
-        dtype={'isbn': 'str', 'title': 'str', 'author': 'str'}
-    )
-    
-    # Load ratings data
-    df_ratings = pd.read_csv(
-        'BX-Book-Ratings.csv',
-        encoding="ISO-8859-1",
-        sep=";",
-        header=0,
-        names=['user', 'isbn', 'rating'],
-        usecols=['user', 'isbn', 'rating'],
-        dtype={'user': 'int32', 'isbn': 'str', 'rating': 'float32'}
-    )
-    
-    # Preprocessing
-    user_ratings_count = df_ratings['user'].value_counts()
-    book_ratings_count = df_ratings['isbn'].value_counts()
-
-    df_ratings_filtered = df_ratings[
-        df_ratings['user'].isin(user_ratings_count[user_ratings_count >= 200].index) &
-        df_ratings['isbn'].isin(book_ratings_count[book_ratings_count >= 100].index)
-    ]
-
-    # Merge with book data
-    df_merged = df_ratings_filtered.merge(df_books, on='isbn')
-
-    # Create pivot table
-    df_pivot = df_merged.pivot(index='isbn', columns='user', values='rating').fillna(0)
-
-    # Filter books to those in the pivot table
-    df_books_filtered = df_books[df_books['isbn'].isin(df_pivot.index)]
-
-    # Create title to ISBN mapping
-    title_to_isbn = {}
-    for title, group in df_books_filtered.groupby('title'):
-        title_to_isbn[title] = group['isbn'].iloc[0]
-
-    # Create ISBN to title mapping
-    isbn_to_title = df_books_filtered.set_index('isbn')['title'].to_dict()
-
-    # Build the sparse matrix and KNN model
-    book_matrix = csr_matrix(df_pivot.values)
-    model_knn = NearestNeighbors(metric='cosine', algorithm='brute')
-    model_knn.fit(book_matrix)
-    
-    return title_to_isbn, isbn_to_title, book_matrix, model_knn, df_pivot
+    try:
+        # Download the pre-processed data
+        response = requests.get(GITHUB_RAW_URL)
+        response.raise_for_status()
+        
+        # Load the data
+        data = pickle.loads(response.content)
+        
+        # Extract components
+        title_to_isbn = data['title_to_isbn']
+        isbn_to_title = data['isbn_to_title']
+        df_pivot = data['df_pivot']
+        
+        # Build the sparse matrix and KNN model
+        book_matrix = csr_matrix(df_pivot.values)
+        model_knn = NearestNeighbors(metric='cosine', algorithm='brute')
+        model_knn.fit(book_matrix)
+        
+        return title_to_isbn, isbn_to_title, book_matrix, model_knn, df_pivot
+    except Exception as e:
+        st.error(f"Failed to load data: {str(e)}")
+        st.stop()
 
 def get_recommends(book, title_to_isbn, isbn_to_title, book_matrix, model_knn, df_pivot, n_neighbors=6):
     """Get book recommendations"""
